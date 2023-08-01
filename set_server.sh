@@ -23,7 +23,13 @@ server {
   }
 }
 EOF"
-sudo ln -s /etc/nginx/sites-available/django /etc/nginx/sites-enabled/django
+
+# symbolic link
+TARGET_CONF=/etc/nginx/sites-enabled/django
+if [ -e $TARGET_CONF ]; then
+  sudo rm $TARGET_CONF
+fi
+sudo ln -s /etc/nginx/sites-available/django $TARGET_CONF
 
 # nginx 실행
 sudo systemctl restart nginx
