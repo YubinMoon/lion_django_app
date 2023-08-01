@@ -4,9 +4,8 @@ SERVER_IP="223.130.162.53"
 
 if [ ! -z "$1" ]; then
   SERVER_IP=$1
-  echo "add address"
 fi
-echo $SERVER_IP
+
 # nginx 설치
 sudo apt-get update && sudo apt-get install nginx
 
@@ -19,8 +18,8 @@ server {
 
   location / {
     proxy_pass http://127.0.0.1:8000;
-    proxy_set_header Host \$Host;
-    proxy_set_header X-Real-IP \$remote_addr;
+    proxy_set_header Host \\\$Host;
+    proxy_set_header X-Real-IP \\\$remote_addr;
   }
 }
 EOF"
