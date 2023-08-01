@@ -4,8 +4,9 @@ SERVER_IP="223.130.162.53"
 
 if [ ! -z "$1" ]; then
   SERVER_IP=$1
+  echo "add address"
 fi
-
+echo $SERVER_IP
 # nginx 설치
 sudo apt-get update && sudo apt-get install nginx
 
