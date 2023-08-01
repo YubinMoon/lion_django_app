@@ -9,4 +9,4 @@ else
   source /home/lion/lion_django_app/venv/bin/activate
 fi
 # gunicon 실행
-gunicorn lion_app.wsgi:application --config gunicorn_config.py
+gunicorn lion_app.wsgi:application --config lion_app/gunicorn_config.py
