@@ -1,5 +1,26 @@
 #!/bin/bash
 
+SERVER_IP="223.130.162.53"
+
+MANUAL="Usage: $0 [-i server_ip]"
+
+while getopts "i:" opt; do
+  case $opt in
+  i)
+    SERVER_IP=$OPTARG
+    ;;
+  *)
+    echo $MANUAL
+    exit 1
+    ;;
+  esac
+done
+
+if [ -z $SERVER_IP ]; then
+  echo $MANUAL
+  exit 1
+fi
+
 # nginx 설치
 sudo apt-get update && sudo apt-get install nginx
 
@@ -8,7 +29,7 @@ sudo apt-get update && sudo apt-get install nginx
 sudo sh -c "cat > /etc/nginx/sites-available/django <<EOF
 server {
   listen 80;
-  server_name 223.130.162.53;
+  server_name $SERVER_IP;
 
   location / {
     proxy_pass http://127.0.0.1:8000;
