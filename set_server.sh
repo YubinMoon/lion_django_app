@@ -2,23 +2,8 @@
 
 SERVER_IP="223.130.162.53"
 
-MANUAL="Usage: $0 [-i server_ip]"
-
-while getopts "i:" opt; do
-  case $opt in
-  i)
-    SERVER_IP=$OPTARG
-    ;;
-  *)
-    echo $MANUAL
-    exit 1
-    ;;
-  esac
-done
-
-if [ -z $SERVER_IP ]; then
-  echo $MANUAL
-  exit 1
+if [ ! -z "$1" ]; then
+  SERVER_IP=$1
 fi
 
 # nginx 설치
