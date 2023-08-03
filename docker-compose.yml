@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  lion-app:
+    container_name: lion-app-dc
+    build:
+      context: lion_app
+      dockerfile: dockerfile
+    image: lion-app
+    ports:
+      - "8000:8000"
+
+  nginx:
+    container_name: lion-nginx-dc
+    build:
+      context: .
+      dockerfile: dockerfile.nginx
+    image: lion-nginx
+    ports:
+      - "8888:80"
