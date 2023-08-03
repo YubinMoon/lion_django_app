@@ -12,6 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . ${APP_NAME}
 
-WORKDIR ${APP_NAME}/lion_app
-
 CMD ["gunicorn", "lion_app.wsgi:application", "--config", "lion_app/gunicorn_config.py"]
