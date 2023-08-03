@@ -1,13 +1,26 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 # Create your models here.
 class Topic(models.Model):
-    owner = models.ForeignKey('auth.User', related_name='topics', on_delete=models.CASCADE)
-    admin = models.ForeignKey('auth.User', related_name='admin_topics', on_delete=models.CASCADE)
-    common= models.ForeignKey('auth.User', related_name='common_topics', on_delete=models.CASCADE)
+    name = models.TextField(unique=True)
+    is_private = models.BooleanField(default=False)
+    owner = models.ForeignKey(User, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Post(models.Model):
-    title = models.CharField(max_length=100)
-    body = models.TextField()
-    author = models.ForeignKey('auth.User', related_name='posts', on_delete=models.CASCADE)
-    topic = models.ForeignKey(Topic, related_name='posts', on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, related_name="posts", on_delete=models.CASCADE)
+    title = models.TextField(max_length=200)
+    content = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} by {self.author}"
