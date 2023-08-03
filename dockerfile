@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.11-alpine
 
 ARG APP_NAME=/app
 
