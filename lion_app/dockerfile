@@ -13,7 +13,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . ${APP_NAME}
 
-RUN python manage.py migrate
+COPY ./scripts/start /start
+RUN sed -i 's/\r$//g' /start
+RUN chmod +x /start
+
 RUN python manage.py collectstatic
 
 CMD ["gunicorn", "lion_app.wsgi:application", "--config", "lion_app/gunicorn_config.py"]

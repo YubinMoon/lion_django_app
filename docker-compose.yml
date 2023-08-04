@@ -12,6 +12,8 @@ services:
     volumes:
       - lion-app:/var/www/html
       - ./lion_app:/app
+    command:
+      - "/start"
 
   nginx:
     container_name: lion-nginx-dc
