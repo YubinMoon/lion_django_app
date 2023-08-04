@@ -11,6 +11,7 @@ services:
       - "8000:8000"
     volumes:
       - lion-app:/var/www/html
+      - ./lion_app:/app
 
   nginx:
     container_name: lion-nginx-dc
