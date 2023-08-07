@@ -14,6 +14,8 @@ services:
       - ./lion_app:/app
     command:
       - "/start"
+    depends_on:
+      - db
 
   nginx:
     container_name: lion-nginx-dc
@@ -27,6 +29,16 @@ services:
       - lion-app:/var/www/html
     depends_on:
       - lion-app
+
+  db:
+    container_name: lion-postgres
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
 
 volumes:
   lion-app:
