@@ -1,5 +1,8 @@
 FROM ubuntu:22.04
 
+ARG LOCAL_IP
+ENV SERVER_NAME LOCAL_IP
+
 RUN apt-get update && apt install -y nginx vim
 RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 RUN chown -R www-data:www-data /var/lib/nginx
