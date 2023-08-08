@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,12 +26,13 @@ SECRET_KEY = "django-insecure-*#97n$&mqdvik#^diiht+06hj^0vz3=2ro14^ke&79m*xlyfld
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "223.130.162.53"]
+LOCAL_IP = os.getenv("LOCAL_IP", "localhost")
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8888", "http://223.130.162.53:8888"]
+ALLOWED_HOSTS = ["localhost", LOCAL_IP]
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8888", f"http://{LOCAL_IP}:8888"]
 
 # Application definition
-
 INSTALLED_APPS = [
     "forum.apps.ForumConfig",
     "django.contrib.admin",
@@ -78,10 +80,10 @@ WSGI_APPLICATION = "lion_app.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "db",
+        "NAME": os.getenv("POSTGRES_DB", "postgres"),
+        "USER": os.getenv("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
     }
 }
 
