@@ -1,6 +1,6 @@
 import os
 from pymongo import MongoClient
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
 client = MongoClient(
     host=os.getenv("MONGO_HOST", "localhost"),
