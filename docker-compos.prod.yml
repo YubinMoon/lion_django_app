@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  lion-app:
+    container_name: lion-app-dc
+    build:
+      context: lion_app
+      dockerfile: dockerfile
+    image: lion-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - lion-app:/var/www/html
+      - ./lion_app:/app
+    command:
+      - "/start"
+    depends_on:
+      - db
+    env_file:
+      - ./.envs/prod/db
+      - ./.envs/prod/django
+      - ./.envs/prod/server
+
+  nginx:
+    container_name: lion-nginx-dc
+    build:
+      context: .
+      dockerfile: dockerfile.nginx
+    image: lion-nginx
+    ports:
+      - "8888:80"
+    volumes:
+      - lion-app:/var/www/html
+    depends_on:
+      - lion-app
+
+  db:
+    container_name: lion-postgres
+    image: postgres:15
+    env_file:
+      - ./.envs/local/db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  lion-app:
+  postgres_data:
