@@ -34,6 +34,7 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:8888", f"http://{LOCAL_IP}:8888"]
 
 # Application definition
 INSTALLED_APPS = [
+    "blog.apps.BlogConfig",
     "forum.apps.ForumConfig",
     "django.contrib.admin",
     "django.contrib.auth",
