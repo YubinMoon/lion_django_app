@@ -4,10 +4,11 @@
 # https://aws.amazon.com/developer/language/python/
 
 import boto3
+import json
 from botocore.exceptions import ClientError
 
 
-def get_secret():
+def get_secret() -> dict:
     secret_name = "likelion/secret/key"
     region_name = "us-east-1"
 
@@ -24,8 +25,6 @@ def get_secret():
 
     # Decrypts secret using the associated KMS key.
     secret = get_secret_value_response["SecretString"]
-    print("scret: ", secret)
-    print("type: ", type(secret))
 
     # Your code goes here.
-    return secret
+    return json.loads(secret)
