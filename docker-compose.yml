@@ -10,6 +10,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ~/.aws:/root/.aws:ro
       - lion-app:/var/www/html
       - ./lion_app:/app
     command:
@@ -44,17 +45,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  mongo:
-    container_name: lion-mongo
-    image: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    env_file:
-      - ./.envs/local/db
-
 volumes:
   lion-app:
   postgres_data:
-  mongo_data:

@@ -13,9 +13,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from common.aws import get_secret
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+secret = get_secret()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -34,7 +37,6 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:8888", f"http://{LOCAL_IP}:8888"]
 
 # Application definition
 INSTALLED_APPS = [
-    "blog.apps.BlogConfig",
     "forum.apps.ForumConfig",
     "django.contrib.admin",
     "django.contrib.auth",

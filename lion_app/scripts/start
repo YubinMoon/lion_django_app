@@ -2,5 +2,6 @@
 
 echo start server
 
+python manage.py collectstatic --noinput
 python manage.py migrate
 gunicorn lion_app.wsgi:application --config lion_app/gunicorn_config.py
