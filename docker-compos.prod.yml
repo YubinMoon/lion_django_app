@@ -14,8 +14,6 @@ services:
       - ./lion_app:/app
     command:
       - "/start"
-    depends_on:
-      - db
     env_file:
       - ./.envs/prod/db
       - ./.envs/prod/django
