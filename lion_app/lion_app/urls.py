@@ -1,9 +1,10 @@
 from django.contrib import admin
-from django.urls import path, include
-from blog.urls import urlpatterns as blog_urls
+from django.urls import include, path
+
+from blog.urls import router as blog_router
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("blog/", include("blog.urls")),
+    path("blog/", include(blog_router.urls)),
     path("api-auth/", include("rest_framework.urls")),
 ]

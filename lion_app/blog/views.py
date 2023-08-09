@@ -1,34 +1,33 @@
 import os
-from pymongo import MongoClient
+
 from django.http import JsonResponse
+from pymongo import MongoClient
+from rest_framework.response import Response
+from rest_framework.viewsets import ViewSet
+from rest_framework import status
 
-client = MongoClient(
-    host=os.getenv("MONGO_HOST", "localhost"),
-)
-db = client.likelion
-
-
-def create_blog(request) -> bool:
-    blog = {
-        "title": "My First Blog",
-        "content": "This is my first blog post",
-        "author": "Lion",
-    }
-    try:
-        db.blogs.insert_one(blog)
-        return JsonResponse({"status": True})
-    except Exception as e:
-        print(e)
-        return JsonResponse({"status": False})
+from .serializer import BlogSerializer
 
 
-def update_blog():
-    ...
+class BlogViewSet(ViewSet):
+    serializer_class = BlogSerializer
 
+    def list(self, request):
+        return Response(status=status.HTTP_200_OK)
 
-def delete_blog():
-    ...
+    def create(self, request):
+        serializer = BlogSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.create(serializer.validated_data)
+            return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
 
+    def update(self, request, pk=None):
+        ...
 
-def read_blog():
-    ...
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    def destroy(self, request, pk=None):
+        ...
