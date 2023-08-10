@@ -10,4 +10,4 @@ jobs:
         run: |
           sshpass \
           -p ${{ secrets.PASSWORD }} ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
-          "cd ./lion;git pull;docker compose -f docker-compos.prod.yml up -d --build"
+          "cd ./lion;ls -al"
