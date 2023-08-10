@@ -14,10 +14,12 @@ services:
       - ./lion_app:/app
     command:
       - "/start"
+    depends_on:
+      - db
     env_file:
-      - ./.envs/prod/db
-      - ./.envs/prod/django
-      - ./.envs/prod/server
+      - ./.envs/local/db
+      - ./.envs/local/django
+      - ./.envs/local/server
 
   nginx:
     container_name: lion-nginx-dc
@@ -32,5 +34,12 @@ services:
     depends_on:
       - lion-app
 
-volumes:
-  lion-app:
+  db:
+    container_name: lion-postgres
+    image: postgres:15
+    env_file:
+      - ./.envs/local/db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data

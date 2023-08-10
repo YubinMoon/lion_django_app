@@ -1,0 +1,33 @@
+name: lesson2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_test:
+    name: docker build test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: docker build
+        run: |
+          docker build -t lion-app lion_app
+          docker images lion-app
+
+  deploy:
+    name: deploy to server
+    needs: build_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: ssh deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd ./lion
+            docker compose up -d --build
