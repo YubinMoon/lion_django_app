@@ -10,6 +10,7 @@ jobs:
       - name: test ssh
         run: |
           echo "test"
+          mkdir .ssh
           ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
           sshpass \
           -p ${{ secrets.PASSWORD }} ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
