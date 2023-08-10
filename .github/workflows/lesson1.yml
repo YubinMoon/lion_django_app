@@ -1,0 +1,19 @@
+on:
+  pull_request:
+    types:
+      - opened
+  issues:
+    types:
+      - opened
+
+jobs:
+  PR:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "PR opened"
+  Issue:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Issue opened"
