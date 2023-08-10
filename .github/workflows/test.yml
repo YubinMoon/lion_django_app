@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: test ssh
         run: |
-          ssh-keyscan -t rsa {{ secrets.USERNAME }} >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
           sshpass \
           -p ${{ secrets.PASSWORD }} ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
           "cd ./lion;git pull;docker compose -f docker-compos.prod.yml up -d --build"
