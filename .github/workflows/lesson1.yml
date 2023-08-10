@@ -14,4 +14,4 @@ jobs:
         run: echo "This event is $GITHUB_EVENT_NAME"
 
       - name: echo github context
-        run: echo "github url $${{ github.repositoryUrl }}"
+        run: echo "github url ${{ github.repositoryUrl }}"
