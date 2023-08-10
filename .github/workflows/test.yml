@@ -7,5 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: test ssh
-        run: |
-          ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+        run: ls -al
