@@ -9,5 +9,4 @@ jobs:
       - name: test ssh
         run: |
           sshpass \
-          -p ${{ secrets.PASSWORD }} ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
-          "cd ./lion;ls -al"
+          -p ${{ secrets.PASSWORD }} ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "cd ./lion;ls -al"
