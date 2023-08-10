@@ -27,7 +27,7 @@ jobs:
         run: docker compose build lion-app
       - name: build
         working-directory: ./lion_app
-        run: docker build -t lion-app
+        run: docker build --tag lion-app .
       - name: docker image
         run: docker images lion-app
 
