@@ -31,4 +31,4 @@ jobs:
           script: |
             cd ./lion
             git pull
-            docker docker compose -f docker-compos.prod.yml up -d --build
+            docker compose -f docker-compos.prod.yml up -d --build
