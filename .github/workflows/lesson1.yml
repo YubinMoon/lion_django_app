@@ -33,6 +33,7 @@ jobs:
 
   docker-images:
     name: docker images
+    needs: docker-build
     runs-on: ubuntu-latest
     steps:
       - name: docker images
