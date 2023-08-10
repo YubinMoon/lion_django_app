@@ -17,9 +17,9 @@ services:
     depends_on:
       - db
     env_file:
-      - ./.envs/local/db
-      - ./.envs/local/django
-      - ./.envs/local/server
+      - ./.envs/prod/db
+      - ./.envs/prod/django
+      - ./.envs/prod/server
 
   nginx:
     container_name: lion-nginx-dc
@@ -38,7 +38,7 @@ services:
     container_name: lion-postgres
     image: postgres:15
     env_file:
-      - ./.envs/local/db
+      - ./.envs/prod/db
     ports:
       - "5432:5432"
     volumes:

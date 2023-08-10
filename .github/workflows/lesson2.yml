@@ -30,4 +30,4 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd ./lion
-            docker compose up -d --build
+            docker docker compose -f docker-compos.prod.yml up -d --build
