@@ -18,10 +18,22 @@ jobs:
       - name: list files
         run: ls -al
 
-  docker-compose-build:
-    name: docker compose build
+  docker-build:
+    name: docker build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: docker compose build
         run: docker compose build lion-app
+      - name: build
+        working-directory: ./lion-app
+        run: docker build -t lion-app
+      - name: docker image
+        run: docker images lion-app
+
+  docker-images:
+    name: docker images
+    runs-on: ubuntu-latest
+    steps:
+      - name: docker images
+        run: docker images lion-app
