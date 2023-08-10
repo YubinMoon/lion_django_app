@@ -13,5 +13,5 @@ jobs:
           mkdir .ssh
           ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
           sshpass \
-          -p ${{ secrets.PASSWORD }} ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
+          -vp ${{ secrets.PASSWORD }} ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
           "cd ./lion;git pull;docker compose -f docker-compos.prod.yml up -d --build"
