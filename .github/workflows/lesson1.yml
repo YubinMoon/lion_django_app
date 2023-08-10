@@ -1,8 +1,9 @@
 name: lesson1
 
 on:
-  pull_request:
-  push:
+  workflow_dispatch:
+  # pull_request:
+  # push:
 
 jobs:
   echo-event:
