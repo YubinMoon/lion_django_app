@@ -33,6 +33,7 @@ jobs:
 
   docker-images:
     name: docker images
+    if: ${{ always() }}
     needs: docker-build
     runs-on: ubuntu-latest
     steps:
