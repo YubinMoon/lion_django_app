@@ -3,8 +3,14 @@ name: test
 on: push
 
 jobs:
-  ssh-test:
+  ssh:
+    name: test
     runs-on: ubuntu-latest
     steps:
       - name: test ssh
-        run: ls -al
+        run: |
+          echo "test"
+          ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          sshpass \
+          -p ${{ secrets.PASSWORD }} ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
+          "cd ./lion;git pull;docker compose -f docker-compos.prod.yml up -d --build"
