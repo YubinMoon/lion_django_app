@@ -1,0 +1,36 @@
+name: CD using docker image
+
+on:
+  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: docker build
+        run: |
+          docker build -t lion-app lion_app:latest
+          docker login -u ${{ secrets.NCP_ID }} -p ${{ secrets.NCP_PASSWORD }}
+          docker tag lion-app:latest ${{ secrets.NCR_URL }}/lion-app:latest
+          docker push ${{ secrets.NCR_URL }}/lion-app:latest
+
+  deploy:
+    name: deploy to server
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: ssh deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            docker login -u ${{ secrets.NCP_ID }} -p ${{ secrets.NCP_PASSWORD }}
+            docker pull ${{ secrets.NCR_URL }}/lion-app:latest

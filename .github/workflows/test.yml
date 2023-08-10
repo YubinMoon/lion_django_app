@@ -1,0 +1,13 @@
+name: test
+
+on: push
+
+jobs:
+  ssh-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test ssh
+        run: |
+          run: sshpass \
+          -p ${{ secrets.PASSWORD }} ssh ${{ secret.USERNAME }}@${{ secret.HOST }} \
+          "cd ./lion;git pull;docker compose -f docker-compos.prod.yml up -d --build"
