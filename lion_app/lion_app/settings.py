@@ -31,7 +31,11 @@ DEBUG = True
 
 LOCAL_IP = os.getenv("LOCAL_IP", "localhost")
 
-ALLOWED_HOSTS = ["localhost", LOCAL_IP]
+ALLOWED_HOSTS = [
+    "localhost",
+    "http://lion-lb-18904498-6a890bf84dc5.kr.lb.naverncp.com/",
+    LOCAL_IP,
+]
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:8888", f"http://{LOCAL_IP}:8888"]
 
