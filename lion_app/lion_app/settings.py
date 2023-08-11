@@ -33,7 +33,7 @@ LOCAL_IP = os.getenv("LOCAL_IP", "localhost")
 
 ALLOWED_HOSTS = [
     "localhost",
-    "http://lion-lb-18904498-6a890bf84dc5.kr.lb.naverncp.com/",
+    "lion-lb-18904498-6a890bf84dc5.kr.lb.naverncp.com",
     LOCAL_IP,
 ]
 
