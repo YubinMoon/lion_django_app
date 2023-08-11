@@ -1,11 +1,9 @@
 name: CD using docker image
 
 on:
-  workflow_dispatch:
-# on:
-#   push:
-#     branches:
-#       - master
+  push:
+    branches:
+      - master
 
 jobs:
   build:
