@@ -1,10 +1,9 @@
 name: lesson2
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches:
-  #     - master
+  push:
+    branches:
+      - master
 
 jobs:
   build_test:
