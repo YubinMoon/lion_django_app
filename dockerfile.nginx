@@ -1,8 +1,5 @@
 FROM ubuntu:22.04
 
-ARG LOCAL_IP
-ENV SERVER_NAME LOCAL_IP
-
 RUN apt-get update && apt install -y nginx vim
 RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 RUN chown -R www-data:www-data /var/lib/nginx
@@ -12,9 +9,14 @@ RUN ln -s /etc/nginx/sites-available/django /etc/nginx/sites-enabled/django
 
 WORKDIR /etc/nginx
 
-CMD ["nginx"]
+RUN mkdir /var/www/html/static
 
-RUN rm /etc/nginx/sites-enabled/default
+COPY ./scripts/nginx_entry /entrypoint
+RUN sed -i 's/\r$//g' /entrypoint
+RUN chmod +x /entrypoint
+
+ENTRYPOINT [ "/entrypoint" ]
+CMD ["nginx"]
 
 EXPOSE 80
 EXPOSE 443
