@@ -21,8 +21,6 @@ services:
       - AWS_SECRET_NAME=like/lion/prod
 
   nginx:
-    depends_on:
-      - lion-app
     container_name: lion-nginx-dc
     build:
       context: .
