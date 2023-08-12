@@ -3,15 +3,12 @@ version: "3"
 services:
   lion-app:
     container_name: lion-app-dc
-    build:
-      context: lion_app
-      dockerfile: dockerfile
-    image: lion-app
+    image: limeskin.kr.ncr.ntruss.com/lion-app:latest
     ports:
       - "8000:8000"
     volumes:
-      - lion-app:/var/www/html
-      - ./lion_app:/app
+      - ~/.aws:/root/.aws:ro
+      - "staticfiles:/var/www/html/static"
     command:
       - "/start"
     depends_on:
@@ -20,8 +17,12 @@ services:
       - ./.envs/prod/db
       - ./.envs/prod/django
       - ./.envs/prod/server
+    environment:
+      - AWS_SECRET_NAME=like/lion/prod
 
   nginx:
+    depends_on:
+      - lion-app
     container_name: lion-nginx-dc
     build:
       context: .
@@ -30,7 +31,9 @@ services:
     ports:
       - "8888:80"
     volumes:
-      - lion-app:/var/www/html
+      - "staticfiles:/var/www/html/static"
+    env_file:
+      - ./.envs/prod/server
     depends_on:
       - lion-app
 
@@ -45,5 +48,4 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  lion-app:
-  postgres_data:
+  staticfiles:
