@@ -1,32 +1,69 @@
-name: CD using docker image
+name: CD using Docker Image
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+
+env:
+  IMAGE: ${{ vars.NCR_REGISTRY }}/lion-app
+  IMAGE_TAG: ${{ vars.NCR_REGISTRY }}/lion-app:latest
 
 jobs:
-  build:
+  build-and-push:
+    name: Build and Push Image
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: docker build
-        run: |
-          docker build -t lion-app lion_app:latest
-          docker login -u ${{ secrets.NCP_ID }} -p ${{ secrets.NCP_PASSWORD }}
-          docker tag lion-app:latest ${{ secrets.NCR_URL }}/lion-app:latest
-          docker push ${{ secrets.NCR_URL }}/lion-app:latest
+      - uses: actions/checkout@v3
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to NCR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ vars.NCR_REGISTRY }}
+          username: ${{ secrets.NCR_ACCESS_KEY_ID }}
+          password: ${{ secrets.NCR_SECRET_KEY }}
 
-  deploy:
-    name: deploy to server
-    needs: build
+      - name: Get current timestamp
+        id: timestamp
+        run: echo "timestamp=$(date '+%s')" >> "$GITHUB_OUTPUT"
+
+      - name: Build and Push
+        uses: docker/build-push-action@v4
+        with:
+          context: lion_app
+          tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
+          push: true
+
+  deployment:
+    needs: build-and-push
+    name: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: ssh deploy
+      - uses: actions/checkout@v3
+      - name: pull and run the image
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            docker login -u ${{ secrets.NCP_ID }} -p ${{ secrets.NCP_PASSWORD }}
-            docker pull ${{ secrets.NCR_URL }}/lion-app:latest
+            cd lion
+            docker login \
+            ${{ vars.NCR_REGISTRY }} \
+            -u ${{ secrets.NCR_ACCESS_KEY_ID }} \
+            -p ${{ secrets.NCR_SECRET_KEY }}
+            docker pull ${{ env.IMAGE_TAG }}
+            # docker-compose -f docker-compose.prod.yml up -d
+            docker stop lion-app && docker rm lion-app
+            docker run -p 8000:8000 -d \
+            --name lion-app \
+            -v ~/.aws:/root/.aws:ro \
+            --env-file .envs/prod/django \
+            --env-file .envs/prod/db \
+            --env-file .envs/prod/server \
+            ${{ vars.NCR_REGISTRY }}/lion-app:latest \
+            /start
+
+      - name: echo IMAGE_TAG
+        run: echo $IMAGE_TAG
