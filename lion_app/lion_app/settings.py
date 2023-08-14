@@ -37,7 +37,11 @@ ALLOWED_HOSTS = [
     LOCAL_IP,
 ]
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8888", f"http://{LOCAL_IP}:8888"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8888",
+    "http://lion-lb-18904498-6a890bf84dc5.kr.lb.naverncp.com",
+    f"http://{LOCAL_IP}:8888",
+]
 
 # Application definition
 INSTALLED_APPS = [

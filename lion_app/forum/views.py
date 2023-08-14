@@ -10,7 +10,12 @@ class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
 
+    @extend_schema(summary="새 토픽 생성")
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
+
+@extend_schema(tags=["Post"])
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer

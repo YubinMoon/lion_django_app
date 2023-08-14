@@ -4,6 +4,8 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
+from django.conf import settings
+from django.conf.urls.static import static
 
 from blog.urls import router as blog_router
 from forum.urls import router as forum_router
@@ -20,4 +22,4 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
