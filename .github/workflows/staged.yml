@@ -42,7 +42,7 @@ jobs:
       - name: pull and run the image
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.STAGED }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
