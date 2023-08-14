@@ -22,7 +22,9 @@ media
 
 # C extensions
 *.so
-
+my.secret
+.actrc
+my.var
 # Distribution / packaging
 .Python
 build/

@@ -35,16 +35,5 @@ services:
     depends_on:
       - lion-app
 
-  db:
-    container_name: lion-postgres
-    image: postgres:15
-    env_file:
-      - ./.envs/prod/db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
 volumes:
   staticfiles:
-  postgres_data:
