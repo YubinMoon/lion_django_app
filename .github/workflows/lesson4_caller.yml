@@ -11,5 +11,8 @@ jobs:
       - run: echo "This workflow is ${{ github.workflow }}"
   call-workflow:
     uses: ./.github/workflows/lesson4.yml
+    strategy:
+      matrix:
+        person: ["Eunsub", "Yoo", "Joseph"]
     with:
-      person: Terry
+      person: ${{ matrix.person }}
