@@ -3,7 +3,7 @@ version: "3"
 services:
   lion-app:
     container_name: lion-app-dc
-    image: limeskin.kr.ncr.ntruss.com/lion-app:latest
+    image: limeskin.kr.ncr.ntruss.com/lion-app:staged
     ports:
       - "8000:8000"
     volumes:
