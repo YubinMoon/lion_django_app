@@ -46,7 +46,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd lion
             docker login \
             ${{ vars.NCR_REGISTRY }} \
             -u ${{ secrets.NCR_ACCESS_KEY_ID }} \
@@ -56,7 +55,7 @@ jobs:
             docker run -p 8080:8000 -d \
             --name lion-app \
             -v ~/.aws:/root/.aws:ro \
-            --env-file .env \
+            --env-file ./.env \
             ${{ vars.NCR_REGISTRY }}/lion-app:staged \
             /start
       - name: echo IMAGE_TAG
