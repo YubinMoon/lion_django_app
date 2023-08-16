@@ -53,7 +53,7 @@ jobs:
             -p ${{ secrets.NCR_SECRET_KEY }}
             docker pull ${{ env.IMAGE_TAG }}
             docker stop lion-app && docker rm lion-app
-            docker run -p 8080:8080 -d \
+            docker run -p 8080:8000 -d \
             --name lion-app \
             -v ~/.aws:/root/.aws:ro \
             --env-file .envs/prod/django \
