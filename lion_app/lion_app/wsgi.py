@@ -11,6 +11,8 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lion_app.settings.local")
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE", f"lion_app.settings.{os.getenv('RUN_MODE', 'local')}"
+)
 
 application = get_wsgi_application()
