@@ -56,9 +56,7 @@ jobs:
             docker run -p 8080:8000 -d \
             --name lion-app \
             -v ~/.aws:/root/.aws:ro \
-            --env-file .envs/prod/django \
-            --env-file .envs/prod/db \
-            --env-file .envs/prod/server \
+            --env-file .env \
             ${{ vars.NCR_REGISTRY }}/lion-app:staged \
             /start
       - name: echo IMAGE_TAG
