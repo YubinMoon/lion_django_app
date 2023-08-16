@@ -32,8 +32,6 @@ services:
       - "8888:80"
     volumes:
       - lion-app:/var/www/html
-    depends_on:
-      - lion-app
 
   db:
     container_name: lion-postgres
