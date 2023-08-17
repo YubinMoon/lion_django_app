@@ -35,3 +35,6 @@ class TopicGroupUser(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     group = models.IntegerField(default=0, choices=GroupChoices.choices)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.topic.name} - {self.user.username} - {self.group}"
