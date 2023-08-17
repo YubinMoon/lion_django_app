@@ -22,17 +22,11 @@ class TopicViewSet(viewsets.ModelViewSet):
     def posts(self, request, *args, **kwargs):
         user = request.user
         topic: Topic = self.get_object()
-        if topic.is_private:
-            qs = TopicGroupUser.objects.filter(
-                Q(group=0) | Q(group=1),
-                topic=topic,
-                user=user,
+        if not topic.can_be_read_by(user):
+            return Response(
+                status=status.HTTP_401_UNAUTHORIZED, data={"detail": "권한이 없습니다."}
             )
-            if not qs.exists():
-                return Response(
-                    status=status.HTTP_401_UNAUTHORIZED, data={"detail": "권한이 없습니다."}
-                )
-        posts = Post.objects.filter(topic=topic)
+        posts = topic.posts
         serializer = PostSerializer(posts, many=True)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 

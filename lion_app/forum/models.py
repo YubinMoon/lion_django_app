@@ -10,9 +10,15 @@ class Topic(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     posts: models.QuerySet["Post"]
+    members: models.QuerySet["TopicGroupUser"]
 
     def __str__(self):
         return self.name
+
+    def can_be_read_by(self, user: User):
+        if not self.is_private or self.members.filter(user=user).exists():
+            return True
+        return False
 
 
 class Post(models.Model):
@@ -32,7 +38,7 @@ class TopicGroupUser(models.Model):
         COMMON = 0
         ADMIN = 1
 
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="members")
     group = models.IntegerField(default=0, choices=GroupChoices.choices)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
