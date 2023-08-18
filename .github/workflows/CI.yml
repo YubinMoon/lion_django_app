@@ -61,7 +61,7 @@ jobs:
           context: lion_app
           tags: "${{ env.IMAGE }}:${{ steps.timestamp.outputs.timestamp }}"
           push: true
-          load: true
+          # load: true
 
       # - name: Run Tests
       #   run: |
