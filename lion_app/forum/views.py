@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import status
+from rest_framework import status, mixins
 from django.db.models import Q
 from .models import Topic, Post, TopicGroupUser
 from .serializer import TopicSerializer, PostSerializer
@@ -36,6 +36,10 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
+    @extend_schema(deprecated=True)
+    def list(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_400_BAD_REQUEST, data="Deprecated API")
+
     def create(self, request, *args, **kwargs):
         # Check Group and Topic
         # if the user dosen't have enough permission to wite a post
@@ -62,7 +66,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, pk=None, **kwargs):
         user = request.user
         post = get_object_or_404(Post, id=pk)
-        topic = get_object_or_404(Topic, id=post.topic.id)
+        topic = post.topic
         if not topic.can_be_read_by(user):
             return Response(
                 status=status.HTTP_401_UNAUTHORIZED, data={"detail": "권한이 없습니다."}

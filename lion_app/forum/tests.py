@@ -125,7 +125,7 @@ class PostTest(APITestCase):
         posts_n = Post.objects.filter(topic=self.private_topic).count()
         self.assertEqual(len(data), posts_n)
 
-    def test_read_permission_on_post(self):
+    def test_read_permission_on_posts(self):
         # read public post
         self.client.force_login(self.unauthorized_user)
         public_posts = Post.objects.filter(topic=self.public_topic)

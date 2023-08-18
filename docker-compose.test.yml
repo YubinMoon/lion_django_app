@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  lion-app:
+    container_name: lion-app-dc
+    build:
+      context: lion_app
+      dockerfile: dockerfile
+    image: lion-app
+    depends_on:
+      - db
+    command: "/start"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - DB_HOST=db
+      - LOCAL_IP=127.0.0.1
+      - RUN_MODE=local
+
+  db:
+    container_name: lion-postgres
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
