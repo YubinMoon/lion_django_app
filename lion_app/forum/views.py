@@ -44,16 +44,10 @@ class PostViewSet(viewsets.ModelViewSet):
         data = request.data
         topic_id = data.get("topic")
         topic = get_object_or_404(Topic, id=topic_id)
-        if topic.is_private:
-            qs = TopicGroupUser.objects.filter(
-                Q(group=0) | Q(group=1),
-                topic=topic,
-                user=user,
+        if not topic.can_be_read_by(user):
+            return Response(
+                status=status.HTTP_401_UNAUTHORIZED, data={"detail": "권한이 없습니다."}
             )
-            if not qs.exists():
-                return Response(
-                    status=status.HTTP_401_UNAUTHORIZED, data={"detail": "권한이 없습니다."}
-                )
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
@@ -64,3 +58,13 @@ class PostViewSet(viewsets.ModelViewSet):
             )
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+
+    def retrieve(self, request, *args, pk=None, **kwargs):
+        user = request.user
+        post = get_object_or_404(Post, id=pk)
+        topic = get_object_or_404(Topic, id=post.topic.id)
+        if not topic.can_be_read_by(user):
+            return Response(
+                status=status.HTTP_401_UNAUTHORIZED, data={"detail": "권한이 없습니다."}
+            )
+        return super().retrieve(request, *args, **kwargs)

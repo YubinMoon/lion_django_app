@@ -16,7 +16,11 @@ class Topic(models.Model):
         return self.name
 
     def can_be_read_by(self, user: User):
-        if not self.is_private or self.members.filter(user=user).exists():
+        if (
+            not self.is_private
+            or user == self.owner
+            or self.members.filter(user=user).exists()
+        ):
             return True
         return False
 

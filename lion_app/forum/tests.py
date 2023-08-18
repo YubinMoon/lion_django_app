@@ -100,10 +100,61 @@ class PostTest(APITestCase):
         self.client.force_login(self.unauthorized_user)
         res = self.client.get(reverse("topic-posts", args=[self.private_topic.pk]))
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-        # for authorized user => success. 200
+
+        # for common user => success. 200
         self.client.force_login(self.common_user)
         res = self.client.get(reverse("topic-posts", args=[self.private_topic.pk]))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = json.loads(res.content)
         posts_n = Post.objects.filter(topic=self.private_topic).count()
         self.assertEqual(len(data), posts_n)
+
+        # for admin user => success. 200
+        self.client.force_login(self.admin_user)
+        res = self.client.get(reverse("topic-posts", args=[self.private_topic.pk]))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        data = json.loads(res.content)
+        posts_n = Post.objects.filter(topic=self.private_topic).count()
+        self.assertEqual(len(data), posts_n)
+
+        # for owner user => success. 200
+        self.client.force_login(self.topic_owner)
+        res = self.client.get(reverse("topic-posts", args=[self.private_topic.pk]))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        data = json.loads(res.content)
+        posts_n = Post.objects.filter(topic=self.private_topic).count()
+        self.assertEqual(len(data), posts_n)
+
+    def test_read_permission_on_post(self):
+        # read public post
+        self.client.force_login(self.unauthorized_user)
+        public_posts = Post.objects.filter(topic=self.public_topic)
+        for post in public_posts:
+            res = self.client.get(reverse("post-detail", args=[post.pk]))
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # read private post
+        private_posts = Post.objects.filter(topic=self.private_topic)
+        # for unauthorized user => fail. 401
+        self.client.force_login(self.unauthorized_user)
+        for post in private_posts:
+            res = self.client.get(reverse("post-detail", args=[post.pk]))
+            self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # for common user => success. 200
+        self.client.force_login(self.common_user)
+        for post in private_posts:
+            res = self.client.get(reverse("post-detail", args=[post.pk]))
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # for admin user => success. 200
+        self.client.force_login(self.admin_user)
+        for post in private_posts:
+            res = self.client.get(reverse("post-detail", args=[post.pk]))
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        # for owner user => success. 200
+        self.client.force_login(self.topic_owner)
+        for post in private_posts:
+            res = self.client.get(reverse("post-detail", args=[post.pk]))
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
