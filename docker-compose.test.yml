@@ -9,7 +9,6 @@ services:
     image: lion-app
     depends_on:
       - db
-    command: "/start"
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
