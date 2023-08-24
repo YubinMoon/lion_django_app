@@ -8,26 +8,16 @@ terraform {
 }
 
 provider "ncloud" {
-  access_key  = var.NCP_ACCESS_KEY
-  secret_key  = var.NCP_SECRET_KEY
   region      = "KR"
   support_vpc = true
 }
 
+data "ncloud_vpc" "main" {
+  id = var.vpc_no
+}
 
 resource "ncloud_login_key" "main" {
   key_name = "${var.env}-prod-key"
-}
-
-module "vpc" {
-  source         = "../network"
-  NCP_ACCESS_KEY = var.NCP_ACCESS_KEY
-  NCP_SECRET_KEY = var.NCP_SECRET_KEY
-  env            = var.env
-}
-
-data "ncloud_vpc" "main" {
-  id = module.vpc.vpc_no
 }
 
 resource "ncloud_subnet" "main" {
@@ -52,7 +42,7 @@ resource "ncloud_init_script" "prod_be" {
     docker_user       = var.NCP_ACCESS_KEY
     docker_password   = var.NCP_SECRET_KEY
     django_secret_key = var.django_secret_key
-    django_mode       = var.mode
+    django_mode       = var.django_mode
     db_host           = ncloud_public_ip.public_db.public_ip
   })
 }

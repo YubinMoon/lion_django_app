@@ -8,10 +8,18 @@ terraform {
 }
 
 provider "ncloud" {
-  access_key  = var.NCP_ACCESS_KEY
-  secret_key  = var.NCP_SECRET_KEY
   region      = "KR"
   support_vpc = true
+}
+
+locals {
+  env = "prod"
+}
+
+module "vpc" {
+  source = "../modules/network"
+
+  env = local.env
 }
 
 module "servers" {
@@ -25,10 +33,15 @@ module "servers" {
   NCP_ACCESS_KEY    = var.NCP_ACCESS_KEY
   NCP_SECRET_KEY    = var.NCP_SECRET_KEY
   password          = var.password
-  mode              = "prod"
-  env               = "prod"
+  django_mode       = "prod"
+  env               = local.env
+  vpc_no            = module.vpc.vpc_no
 }
 
-# resource "ncloud_login_key" "main" {
-#   key_name = "prod-key"
-# }
+module "loadbalancer" {
+  source = "../modules/loadbalancer"
+
+  env            = local.env
+  vpc_no         = module.vpc.vpc_no
+  server_id_list = module.servers.be_server_list
+}

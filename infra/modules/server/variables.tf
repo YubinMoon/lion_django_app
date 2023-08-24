@@ -45,10 +45,14 @@ variable "django_secret_key" {
   sensitive = true
 }
 
-variable "mode" {
+variable "django_mode" {
   type = string
 }
 
 variable "env" {
+  type = string
+}
+
+variable "vpc_no" {
   type = string
 }

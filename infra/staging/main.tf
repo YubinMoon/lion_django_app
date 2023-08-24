@@ -7,13 +7,22 @@ terraform {
   required_version = ">= 0.13"
 }
 
-// Configure the ncloud provider
 provider "ncloud" {
   access_key  = var.NCP_ACCESS_KEY
   secret_key  = var.NCP_SECRET_KEY
   region      = "KR"
   site        = "PUBLIC"
   support_vpc = true
+}
+
+locals {
+  env = "staging"
+}
+
+module "vpc" {
+  source = "../modules/network"
+
+  env = local.env
 }
 
 module "servers" {
@@ -27,6 +36,15 @@ module "servers" {
   NCP_ACCESS_KEY    = var.NCP_ACCESS_KEY
   NCP_SECRET_KEY    = var.NCP_SECRET_KEY
   password          = var.password
-  mode              = "staging"
-  env               = "staging"
+  django_mode       = "staging"
+  env               = local.env
+  vpc_no            = module.vpc.vpc_no
+}
+
+module "loadbalancer" {
+  source = "../modules/loadbalancer"
+
+  env            = local.env
+  vpc_no         = module.vpc.vpc_no
+  server_id_list = module.servers.be_server_list
 }
