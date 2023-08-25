@@ -1,4 +1,8 @@
 terraform {
+  backend "local" {
+    path = "/home/terry/terraform_study/states/staging.tfstate"
+  }
+
   required_providers {
     ncloud = {
       source = "NaverCloudPlatform/ncloud"
