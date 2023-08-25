@@ -16,23 +16,17 @@ data "ncloud_vpc" "main" {
   id = var.vpc_no
 }
 
+data "ncloud_subnet" "main" {
+  id = var.subnet_no
+}
+
 resource "ncloud_login_key" "main" {
-  key_name = "${var.env}-prod-key"
+  key_name = "${var.env}-key"
 }
 
-resource "ncloud_subnet" "main" {
-  name           = "${var.env}-lion-prod-subnet"
-  vpc_no         = data.ncloud_vpc.main.vpc_no
-  subnet         = "192.168.21.0/24"
-  zone           = "KR-2"
-  network_acl_no = data.ncloud_vpc.main.default_network_acl_no
-  subnet_type    = "PUBLIC"
-  usage_type     = "GEN"
-}
-
-resource "ncloud_init_script" "prod_be" {
-  name = "${var.env}-be-init-script"
-  content = templatefile("${path.module}/be_init_script.sh", {
+resource "ncloud_init_script" "init" {
+  name = "${var.env}-${var.name}-init-script"
+  content = templatefile("${path.module}/init_script.sh", {
     password          = var.password
     postgres_db       = var.postgres_db
     postgres_user     = var.postgres_user
@@ -43,43 +37,19 @@ resource "ncloud_init_script" "prod_be" {
     docker_password   = var.NCP_SECRET_KEY
     django_secret_key = var.django_secret_key
     django_mode       = var.django_mode
-    db_host           = ncloud_public_ip.public_db.public_ip
+    db_host           = var.db_host
   })
 }
 
-resource "ncloud_init_script" "prod_db" {
-  name = "${var.env}-db-init-script"
-  content = templatefile("${path.module}/db_init_script.sh", {
-    password          = var.password
-    postgres_db       = var.postgres_db
-    postgres_user     = var.postgres_user
-    postgres_password = var.postgres_password
-    postgres_port     = var.postgres_port
-  })
-}
-
-resource "ncloud_server" "prod_be" {
-  name                      = "${var.env}-be-server"
-  subnet_no                 = ncloud_subnet.main.id
+resource "ncloud_server" "server" {
+  name                      = "${var.env}-${var.name}-server"
+  subnet_no                 = data.ncloud_subnet.main.subnet_no
   server_image_product_code = var.server_image_product_code
   server_product_code       = data.ncloud_server_product.product.id
-  login_key_name            = ncloud_login_key.main.key_name
-  init_script_no            = ncloud_init_script.prod_be.id
+  login_key_name            = ncloud_login_key.main.id
+  init_script_no            = ncloud_init_script.init.id
   network_interface {
     network_interface_no = ncloud_network_interface.prod_be.id
-    order                = 0
-  }
-}
-
-resource "ncloud_server" "prod_db" {
-  name                      = "${var.env}-db-server"
-  subnet_no                 = ncloud_subnet.main.id
-  server_image_product_code = var.server_image_product_code
-  server_product_code       = data.ncloud_server_product.product.id
-  login_key_name            = ncloud_login_key.main.key_name
-  init_script_no            = ncloud_init_script.prod_db.id
-  network_interface {
-    network_interface_no = ncloud_network_interface.prod_db.id
     order                = 0
   }
 }
@@ -102,55 +72,27 @@ data "ncloud_server_product" "product" {
   }
 }
 
-resource "ncloud_access_control_group" "django" {
-  name   = "${var.env}-django-acg"
+resource "ncloud_access_control_group" "default" {
+  name   = "${var.env}-${var.name}-acg"
   vpc_no = data.ncloud_vpc.main.vpc_no
 }
 
-resource "ncloud_access_control_group_rule" "django-rule" {
-  access_control_group_no = ncloud_access_control_group.django.id
+resource "ncloud_access_control_group_rule" "rule" {
+  access_control_group_no = ncloud_access_control_group.default.id
 
   inbound {
     protocol   = "TCP"
     ip_block   = "0.0.0.0/0"
-    port_range = "8000"
-  }
-}
-
-resource "ncloud_access_control_group" "postgres" {
-  name   = "${var.env}-postgres-acg"
-  vpc_no = data.ncloud_vpc.main.vpc_no
-}
-
-resource "ncloud_access_control_group_rule" "postgres-rule" {
-  access_control_group_no = ncloud_access_control_group.postgres.id
-
-  inbound {
-    protocol   = "TCP"
-    ip_block   = "0.0.0.0/0"
-    port_range = "5432"
+    port_range = var.port
   }
 }
 
 resource "ncloud_network_interface" "prod_be" {
-  name                  = "${var.env}-be-interface"
-  subnet_no             = ncloud_subnet.main.id
-  private_ip            = "192.168.21.6"
-  access_control_groups = [data.ncloud_vpc.main.default_access_control_group_no, ncloud_access_control_group.django.id]
+  name                  = "${var.env}-${var.name}-interface"
+  subnet_no             = data.ncloud_subnet.main.subnet_no
+  access_control_groups = [data.ncloud_vpc.main.default_access_control_group_no, ncloud_access_control_group.default.id]
 }
-
-resource "ncloud_network_interface" "prod_db" {
-  name                  = "${var.env}-db-interface"
-  subnet_no             = ncloud_subnet.main.id
-  private_ip            = "192.168.21.7"
-  access_control_groups = [data.ncloud_vpc.main.default_access_control_group_no, ncloud_access_control_group.postgres.id]
-}
-
 
 resource "ncloud_public_ip" "public_be" {
-  server_instance_no = ncloud_server.prod_be.id
-}
-
-resource "ncloud_public_ip" "public_db" {
-  server_instance_no = ncloud_server.prod_db.id
+  server_instance_no = ncloud_server.server.id
 }

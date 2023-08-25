@@ -53,6 +53,23 @@ variable "env" {
   type = string
 }
 
+variable "name" {
+  type = string
+}
+
 variable "vpc_no" {
   type = string
+}
+
+variable "subnet_no" {
+  type = string
+}
+
+variable "port" {
+  type = string
+}
+
+variable "db_host" {
+  type    = string
+  default = "localhost"
 }

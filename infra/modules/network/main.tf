@@ -16,3 +16,13 @@ resource "ncloud_vpc" "main" {
   name            = "${var.env}-lion-prod-vpc"
   ipv4_cidr_block = "192.168.0.0/16"
 }
+
+resource "ncloud_subnet" "server" {
+  name           = "${var.env}-lion-subnet"
+  vpc_no         = ncloud_vpc.main.vpc_no
+  subnet         = "192.168.21.0/24"
+  zone           = "KR-2"
+  network_acl_no = ncloud_vpc.main.default_network_acl_no
+  subnet_type    = "PUBLIC"
+  usage_type     = "GEN"
+}
