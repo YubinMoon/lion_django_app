@@ -1,6 +1,6 @@
 terraform {
-  backend "local" {
-    path = "/home/terry/terraform_study/states/staging.tfstate"
+  backend "pg" {
+    conn_str = "postgres://postgres:terry@223.130.133.132/postgres"
   }
 
   required_providers {
