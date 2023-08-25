@@ -26,7 +26,9 @@ locals {
 module "vpc" {
   source = "../modules/network"
 
-  env = local.env
+  NCP_ACCESS_KEY = var.NCP_ACCESS_KEY
+  NCP_SECRET_KEY = var.NCP_SECRET_KEY
+  env            = local.env
 }
 
 module "db_server" {
@@ -70,6 +72,8 @@ module "be_server" {
 module "loadbalancer" {
   source = "../modules/loadbalancer"
 
+  NCP_ACCESS_KEY = var.NCP_ACCESS_KEY
+  NCP_SECRET_KEY = var.NCP_SECRET_KEY
   env            = local.env
   vpc_no         = module.vpc.vpc_no
   server_id_list = module.be_server.server_id
