@@ -24,7 +24,7 @@ data "ncloud_subnet" "main" {
 }
 
 resource "ncloud_login_key" "main" {
-  key_name = "${var.env}-key"
+  key_name = "${var.env}-${var.name}-key"
 }
 
 resource "ncloud_init_script" "init" {

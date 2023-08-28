@@ -1,8 +1,9 @@
 terraform {
-  backend "pg" {
-    conn_str = "postgres://postgres:terry@223.130.133.132/postgres"
-  }
+  # backend "pg" {
+  #   conn_str = "postgres://postgres:terry@223.130.133.132/postgres"
+  # }
 
+  backend "pg" {}
   required_providers {
     ncloud = {
       source = "NaverCloudPlatform/ncloud"
