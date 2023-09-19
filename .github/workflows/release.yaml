@@ -52,7 +52,7 @@ jobs:
       - name: update helm chart
         run: |
           cd lion
-          sed -i "s/tag:.*/tag: ${{needs.build-and-push.outputs.tag_version}}/g" ./values.yaml
+          sed -i "s/appVersion:.*/appVersion: \"${{needs.build-and-push.outputs.tag_version}}"/g" ./Chart.yaml
           cat ./values.yaml
 
       - name: commit and push
