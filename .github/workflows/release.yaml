@@ -27,11 +27,11 @@ jobs:
       - name: Get release version
         id: get_release_version
         run: |
-          echo ::set-output name=release_version::${GITHUB_REF#refs/tags/}
+          echo "tag_version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
 
       - name: Build and Push
         uses: docker/build-push-action@v4
         with:
           context: lion_app
-          tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.get_release_version.outputs.release_version }}"
+          tags: ${{ env.IMAGE_TAG }},"${{ env.IMAGE }}:${{ steps.get_release_version.outputs.tag_version }}"
           push: true
