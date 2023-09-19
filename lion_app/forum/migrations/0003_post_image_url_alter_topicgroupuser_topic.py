@@ -5,20 +5,23 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('forum', '0002_topicgroupuser'),
+        ("forum", "0002_topicgroupuser"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='post',
-            name='image_url',
-            field=models.URLField(default=''),
+            model_name="post",
+            name="image_url",
+            field=models.URLField(default=""),
         ),
         migrations.AlterField(
-            model_name='topicgroupuser',
-            name='topic',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='members', to='forum.topic'),
+            model_name="topicgroupuser",
+            name="topic",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="members",
+                to="forum.topic",
+            ),
         ),
     ]
