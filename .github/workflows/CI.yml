@@ -7,8 +7,7 @@ on:
       - master
 
 env:
-  IMAGE: ${{ vars.NCR_REGISTRY }}/lion-app
-  IMAGE_TAG: ${{ vars.NCR_REGISTRY }}/lion-app:latest
+  IMAGE: lion-app
 
 jobs:
   lint:

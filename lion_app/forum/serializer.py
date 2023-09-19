@@ -9,7 +9,23 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = (
             "id",
             "author",
+            "image_url",
             "created_at",
+            "updated_at",
+        )
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Post
+        fields = "__all__"
+        read_only_fields = (
+            "id",
+            "author",
+            "created_at",
+            "image_url",
             "updated_at",
         )
 

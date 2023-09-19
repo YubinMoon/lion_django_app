@@ -32,6 +32,7 @@ DEBUG = True
 LOCAL_IP = os.getenv("LOCAL_IP", "localhost")
 
 ALLOWED_HOSTS = [
+    "*",
     "localhost",
     "223.130.162.53" "lion-lb-18904498-6a890bf84dc5.kr.lb.naverncp.com",
     LOCAL_IP,
@@ -58,10 +59,6 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-    ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
     ],
@@ -76,6 +73,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 MIDDLEWARE = [
+    "common.middlewares.HttpRefererMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

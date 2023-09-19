@@ -1,4 +1,8 @@
 import json
+import tempfile
+import io
+from unittest.mock import MagicMock, patch
+from PIL import Image
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
@@ -49,41 +53,65 @@ class PostTest(APITestCase):
             user=cls.admin_user,
             group=TopicGroupUser.GroupChoices.ADMIN,
         )
+        cls.common_post = Post.objects.create(
+            title="common post",
+            content="common post",
+            topic=cls.private_topic,
+            author=cls.common_user,
+        )
+        cls.admin_post = Post.objects.create(
+            title="admin post",
+            content="admin post",
+            topic=cls.private_topic,
+            author=cls.admin_user,
+        )
+
+        cls.data = {
+            "title": "test title",
+            "content": "test content",
+            "topic": cls.private_topic.pk,
+        }
+
+    def generate_photo_file(self):
+        file = io.BytesIO()
+        image = Image.new("RGBA", size=(100, 100), color=(155, 0, 0))
+        image.save(file, "png")
+        file.name = "test.png"
+        file.seek(0)
+        return file
 
     def test_write_permission_on_private_topic(self):
         # when unauthorized user tries to write a post on tocis => fail. 401
-        data = {
-            "title": "test title",
-            "content": "test content",
-            "topic": self.private_topic.pk,
-            "author": self.unauthorized_user.pk,
-        }
+        data = self.data.copy()
         self.client.force_login(self.unauthorized_user)
         res = self.client.post(reverse("post-list"), data=data)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
         # when common group user tries to write a post on topics => success. 201
+        data = self.data.copy()
         self.client.force_login(self.common_user)
-        data["author"] = self.common_user.pk
         res = self.client.post(reverse("post-list"), data=data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         data = json.loads(res.content)
+        self.assertEqual(len(data["image_url"]), 0)
         Post.objects.get(pk=data["id"])
 
         # when admin group user tries to write a post on topics => success. 201
+        data = self.data.copy()
         self.client.force_login(self.admin_user)
-        data["author"] = self.admin_user.pk
         res = self.client.post(reverse("post-list"), data=data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         data = json.loads(res.content)
+        self.assertEqual(len(data["image_url"]), 0)
         Post.objects.get(pk=data["id"])
 
         # when owner user tries to write a post on topics => success. 201
+        data = self.data.copy()
         self.client.force_login(self.topic_owner)
-        data["author"] = self.topic_owner.pk
         res = self.client.post(reverse("post-list"), data=data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         data = json.loads(res.content)
+        self.assertEqual(len(data["image_url"]), 0)
         Post.objects.get(pk=data["id"])
 
     def test_read_permission_on_topics(self):
@@ -158,3 +186,65 @@ class PostTest(APITestCase):
         for post in private_posts:
             res = self.client.get(reverse("post-detail", args=[post.pk]))
             self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    @patch("forum.views.boto3.client")
+    def test_post_with_or_without_image(self, client: MagicMock):
+        # magic mock
+        s3 = MagicMock()
+        client.return_value = s3
+        s3.upload_fileobj.return_value = None
+        s3.put_object_acl.return_value = None
+
+        # without image => success.
+        data = self.data.copy()
+        self.client.force_login(self.common_user)
+        res = self.client.post(reverse("post-list"), data=data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = json.loads(res.content)
+        self.assertEqual(len(data["image_url"]), 0)
+
+        # with image => success.
+        data = self.data.copy()
+        data["image"] = self.generate_photo_file()
+        self.client.force_login(self.common_user)
+        res = self.client.post(reverse("post-list"), data=data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        data = json.loads(res.content)
+        self.assertGreater(len(data["image_url"]), 0)
+        Post.objects.get(pk=data["id"])
+
+        s3.upload_fileobj.assert_called_once()
+        s3.put_object_acl.assert_called_once()
+
+    def test_delete_permission(self):
+        # unauthorized delete common post > fail
+        self.client.force_login(self.unauthorized_user)
+        res = self.client.delete(reverse("post-detail", args=[self.common_post.pk]))
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # common delete admin post > fail
+        self.client.force_login(self.common_user)
+        res = self.client.delete(reverse("post-detail", args=[self.admin_post.pk]))
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # common delete common post > success
+        self.client.force_login(self.common_user)
+        res = self.client.delete(reverse("post-detail", args=[self.common_post.pk]))
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+        # admin delete admin post > success
+        self.client.force_login(self.admin_user)
+        res = self.client.delete(reverse("post-detail", args=[self.admin_post.pk]))
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+        # owner delete any post > success
+        self.client.force_login(self.topic_owner)
+        posts = Post.objects.filter(topic=self.private_topic).all()
+        for post in posts:
+            res = self.client.delete(reverse("post-detail", args=[post.pk]))
+            self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+        # owner can delete any post
+        # admin can delete any post
+        # common can delete only his/her post
+        # unauthorized can't delete any post
