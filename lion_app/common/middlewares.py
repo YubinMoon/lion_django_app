@@ -8,5 +8,5 @@ class HttpRefererMiddleware:
 
     def __call__(self, request):
         if request.path == "/health/":
-            return JsonResponse({"status": "ERROR"}, status=500)
+            return JsonResponse({"status": "OK"})
         return self.get_response(request)
