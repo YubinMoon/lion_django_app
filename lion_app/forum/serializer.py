@@ -44,6 +44,7 @@ class TopicSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             "id",
+            "owner",
             "created_at",
             "updated_at",
         )
@@ -53,3 +54,8 @@ class TopicSerializer(serializers.ModelSerializer):
     def get_posts(self, obj: Topic):
         posts = obj.posts.all()
         return PostSerializer(posts, many=True).data
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        validated_data["owner"] = user
+        return super().create(validated_data)

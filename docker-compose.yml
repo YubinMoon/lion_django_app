@@ -25,17 +25,6 @@ services:
       - NCP_ACCESS_KEY=${NCLOUD_ACCESS_KEY}
       - NCP_SECRET_KEY=${NCLOUD_SECRET_KEY}
 
-  nginx:
-    container_name: lion-nginx-dc
-    build:
-      context: .
-      dockerfile: dockerfile.nginx
-    image: lion-nginx
-    ports:
-      - "8888:80"
-    volumes:
-      - lion-app:/var/www/html
-
   db:
     container_name: lion-postgres
     image: postgres:15
@@ -45,6 +34,23 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  prom:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/django.rules:/etc/prometheus/django.rules
+      - ./prometheus/consoles/django.html:/usr/share/prometheus/consoles/django.html
+
+  grafana:
+    image: grafana/grafana-oss
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=terry
+      - GF_SECURITY_ADMIN_PASSWORD=terry
 
 volumes:
   lion-app:

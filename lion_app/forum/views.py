@@ -20,6 +20,7 @@ class TopicViewSet(viewsets.ModelViewSet):
 
     @extend_schema(summary="새 토픽 생성")
     def create(self, request, *args, **kwargs):
+        print(request.user.pk)
         return super().create(request, *args, **kwargs)
 
     @action(detail=True, methods=["GET"], url_name="posts")
